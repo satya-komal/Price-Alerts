@@ -1,7 +1,9 @@
 import uuid
 from src.common.database import Database
 import src.models.users.errors as UserErrors
+import src.models.users.constants as UserConstants
 from src.common.utils import Utils
+from src.models.alerts.alert import Alert
 
 
 class User(object):
@@ -21,7 +23,7 @@ class User(object):
         :param password: sha512 hashed password
         :return: True if valid False otherwise
         '''
-        user_data = Database.find_one("users",{'email':email})
+        user_data = Database.find_one(UserConstants.COLLECTION,{"email":email})
         if user_data is None:
             #Tell user that email does not exist
             raise UserErrors.UserNotExistError("The user does not exist")
@@ -34,7 +36,7 @@ class User(object):
 
     @staticmethod
     def register_user(email,password):
-        user_data = Database.find_one("users", {'email': email})
+        user_data = Database.find_one(UserConstants.COLLECTION, {"email": email})
         if user_data is not None:
             # Tell user that email already exist & can not register
             raise UserErrors.UserAlreadyRegisteredError("The email is already registered")
@@ -48,7 +50,7 @@ class User(object):
         return True
 
     def save_to_db(self):
-        Database.insert("users",self.json())
+        Database.insert(UserConstants.COLLECTION,self.json())
 
     def json(self):
         return {
@@ -56,3 +58,10 @@ class User(object):
             "email":self.email,
             "password":self.password
         }
+
+    @classmethod
+    def find_by_email(cls,email):
+        return cls(**Database.find_one(UserConstants.COLLECTION,{'email':email}))
+
+    def get_alerts(self):
+        return Alert.find_by_user_email(self.email)

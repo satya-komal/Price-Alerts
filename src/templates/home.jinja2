@@ -1,0 +1,10 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1>Pricing Alerts System!</h1>
+        <p>The app scans the e-commerce webstores to alert price drops of the items you are interested in</p>
+        <p>Register and add the url of the item that you want to scan and we'll take of the rest</p>
+        <p><a class="btn btn-primary btn-lg" href="{{ url_for('users.register_user') }}" role="button">Sign Up</a></p>
+    </div>
+{% endblock %}
